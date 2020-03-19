@@ -1,1 +1,27 @@
+<%= @post.title %>
+<%= @post.content %>
+<%= @post.categories.last&.name %>
+<% @post.comments.each do |comment| %>
+  <p><%="#{comment.user&.username} says: #{comment.content}"%> </p>
+<% end %>
+<ul>
+  <% @post.unique_users.each do |user| %>
+    <li><%= link_to user.username, user %></li>
+  <% end %>
+</ul>
 
+
+<%= form_for Comment.new do |f| %>
+  <%= f.hidden_field :post_id, value: @post.id %>
+  <%= f.label :user %>
+  <%= f.collection_select :user_id, User.all, :id, :username ,{:prompt => 'Select the author of this comment'}%>
+  <%= f.fields_for :user, @post.users.build do |user_fields| %>
+    <%= user_fields.text_field :username %>
+  <% end %>
+  <br>
+  <%= f.label :content %><br />
+  <%= f.text_area :content %>
+  
+<br>
+<%= f.submit %>
+<% end %>
